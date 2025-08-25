@@ -9,6 +9,7 @@ namespace Catalog.API.Products.CreateProduct
     // This record represents the result of creating a product, containing the product ID.
     public record CreateProductResult(Guid Id);
 
+    // Validator for the CreateProductCommand to ensure data integrity.
     public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
     {
         public CreateProductCommandValidator()
@@ -26,6 +27,7 @@ namespace Catalog.API.Products.CreateProduct
         // This is where you would typically inject your DbContext or repository to interact with the database.
         public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
+
             // create the product.
             var product = new Product
             {

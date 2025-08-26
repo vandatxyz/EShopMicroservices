@@ -1,5 +1,7 @@
 
 
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,10 +37,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
     //options.InstanceName = "Basket_";
 });
 
+// Register all validators from the assembly for MediatR commands and queries.
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+// Add health checks to monitor the health of the application and its dependencies.
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
+    .AddRedis(builder.Configuration.GetConnectionString("Redis")!)
+    ;
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline after build application.
 app.MapCarter();
 app.UseExceptionHandler(options => { });
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.Run();

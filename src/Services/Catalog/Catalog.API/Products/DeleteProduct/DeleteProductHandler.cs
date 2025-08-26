@@ -1,4 +1,7 @@
 ﻿
+using Catalog.API.Products.CreateProduct;
+using MediatR;
+
 namespace Catalog.API.Products.DeleteProduct
 {
     public record DeleteProductCommand(Guid Id) : ICommand<DeleteProductResult>;

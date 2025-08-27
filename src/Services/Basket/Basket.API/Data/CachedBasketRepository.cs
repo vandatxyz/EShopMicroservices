@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 // Các chú thích trong file này viết bằng tiếng Việt
 namespace Basket.API.Data
@@ -17,7 +16,7 @@ namespace Basket.API.Data
             }
             // If not found in cache, get from repository
             var basket = await repository.GetBasket(userName, cancellation);
-            if (basket is not null)
+            if (basket is not null) 
             {
                 // Store in cache for future requests
                 var serializedBasket = JsonSerializer.Serialize(basket);

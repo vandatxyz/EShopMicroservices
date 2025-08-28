@@ -1,5 +1,6 @@
 
 
+using Discount.Grpc;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Distributed;
@@ -7,6 +8,10 @@ using Microsoft.Extensions.Caching.Distributed;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container before building application.
+
+
+
+// Add Carter for building modular APIs and MediatR for CQRS pattern.
 var assembly = typeof(Program).Assembly;
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config =>
@@ -31,12 +36,26 @@ builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 // Add distributed caching using Redis.
 builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 
+// Configure Redis cache settings.
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     //options.InstanceName = "Basket_";
 });
 
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(option =>
+{
+    option.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler
+    {
+        // Return `true` to allow certificates that are untrusted/invalid
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+    return handler;
+});
 // Register all validators from the assembly for MediatR commands and queries.
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 

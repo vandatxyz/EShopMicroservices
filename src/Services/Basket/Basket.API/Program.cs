@@ -60,6 +60,7 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 // Add health checks to monitor the health of the application and its dependencies.
+//cross-cutting concerns such as logging, validation, and exception handling.
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!)

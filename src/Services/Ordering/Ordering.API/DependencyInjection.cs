@@ -1,20 +1,24 @@
-﻿namespace Ordering.API
+﻿using BuildingBlocks.Exceptions.Handler;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
+namespace Ordering.API
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddApiServices(this IServiceCollection services)
+        public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Add API services here, e.g., Controllers, Swagger, CORS, etc.
-            //services.AddCarter();
+            services.AddCarter();
 
+            //services.AddExceptionHandler<CustomExceptionHandler>();
             return services;
         }
 
         public static WebApplication UseApiServices(this WebApplication app)
         {
-            // Configure the HTTP request pipeline here, e.g., Middleware, Endpoints, etc.
+            app.MapCarter();
 
-            //app.MapCarter();
+            //app.UseExceptionHandler(options => { });
+
             return app;
         }
     }

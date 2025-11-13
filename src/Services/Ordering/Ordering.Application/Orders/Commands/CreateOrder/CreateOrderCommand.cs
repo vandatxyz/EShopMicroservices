@@ -3,8 +3,9 @@ using FluentValidation;
 using Ordering.Application.Dtos;
 
 namespace Ordering.Application.Orders.Commands.CreateOrder;
+
 public record CreateOrderCommand(OrderDto Order)
-: ICommand<CreateOrderResult>;
+    : ICommand<CreateOrderResult>;
 
 public record CreateOrderResult(Guid Id);
 

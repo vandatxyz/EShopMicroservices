@@ -5,20 +5,20 @@ using Ordering.Infrastructure.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//add services to the container.
-
-builder.Services.AddApplicationServices()
+// Add services to the container.
+builder.Services
+    .AddApplicationServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration)
     .AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
-//configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.
 app.UseApiServices();
 
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-   await app.InitialiseDatabaseAsync();
+    await app.InitialiseDatabaseAsync();
 }
 
 app.Run();

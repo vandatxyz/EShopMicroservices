@@ -3,30 +3,26 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Data;
 
-namespace Ordering.Infrastructure
+namespace Ordering.Infrastructure;
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddInfrastructureServices
+        (this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        var connectionString = configuration.GetConnectionString("Database");
+
+        // Add services to the container.
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            // Add infrastructure services here, e.g., DbContext, Repositories, External Services, etc.
-            var connectionString = configuration.GetConnectionString("Database");
+            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            options.UseSqlServer(connectionString);
+        });
 
-            services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-            services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
-
-            // Register ApplicationDbContext with SQL Server provider
-            services.AddDbContext<ApplicationDbContext>((sp, option) =>
-            {
-                option.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-                  
-                option.UseSqlServer(connectionString);
-            });
-
-            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-
-            return services;
-        }
+        return services;
     }
 }

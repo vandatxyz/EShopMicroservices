@@ -1,26 +1,21 @@
 ﻿
-
-
-namespace Ordering.Domain.Abstractions
+namespace Ordering.Domain.Abstractions;
+public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
-    public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    public void AddDomainEvent(IDomainEvent domainEvent)
     {
-        private readonly List<IDomainEvent> _domainEvents = new();
+        _domainEvents.Add(domainEvent);
+    }
 
-        public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IDomainEvent[] ClearDomainEvents()
+    {
+        IDomainEvent[] dequeuedEvents = _domainEvents.ToArray();
 
-        public void AddDomainEvent(IDomainEvent domainEvent)
-        {
-            _domainEvents.Add(domainEvent);
-        }
+        _domainEvents.Clear();
 
-        public IDomainEvent[] ClearDomainEvents()
-        {
-            IDomainEvent[] domainEvents = _domainEvents.ToArray();
-
-            _domainEvents.Clear();
-
-            return domainEvents;
-        }
+        return dequeuedEvents;
     }
 }
